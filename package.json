@@ -19,7 +19,7 @@
     "@types/three": "^0.177.0",
     "clsx": "^2.1.1",
     "motion": "^12.19.1",
-    "next": "15.3.4",
+    "next": "15.3.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-type-animation": "^3.2.0",
