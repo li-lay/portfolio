@@ -13,13 +13,13 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
-    "@react-three/drei": "^10.5.0",
     "@opennextjs/cloudflare": "^1.5.1",
+    "@react-three/drei": "^10.5.0",
     "@react-three/fiber": "^9.1.2",
     "@types/three": "^0.178.1",
     "clsx": "^2.1.1",
     "motion": "^12.23.3",
-    "next": "15.3.4",
+    "next": "^15.5.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-type-animation": "^3.2.0",
