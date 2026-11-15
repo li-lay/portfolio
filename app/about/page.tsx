@@ -1,35 +1,95 @@
+import Pane from "@/components/UI/Pane";
+import FocusRow from "@/components/UI/FocusRow";
+import { affiliation, focusAreas, openSource } from "@/lib/content";
+
+const bodyClassName = "mt-4 text-base leading-relaxed text-fg1 md:text-lg";
+
 export default function About() {
-  const name: string = "LILAY";
-  const greeting: string = `The name is `;
-  const blob0: string = ` ! I'm a Computer Science student who's totally hooked on Linux and homelabbing. Hailing from Kampong Speu, Cambodia, I live for the rush of creating and uncovering new adventures. From open-source projects to tinkering with hardware in my home setup. My go-to languages include `;
-  const blob1: string = ` and I utilize containerization with `;
-  const blob2: string = `servers.`;
-  const blob3: string = `Beyond the code, I'm constantly chasing what interests me (not just tech) and sharing knowledge with friends and the community. I'm pumped to join forces on projects that shake things up and make a real difference!`;
   return (
-    <>
-      <div className="mx-auto max-w-[1400px] flex flex-col gap-4 h-full">
-        <div className="flex flex-col justify-start w-full pt-8 sm:pt-32 mb:w-2/6 sm:pl-10">
-          <h1 className="text-[#fabd2f] text-[24px] md:text-[34px] sm:text-[28px] font-patua_one">
-            About Me
-          </h1>
-          <p className="text-[#fbf1c7] text-[18px] md:text-[24px] sm:text-[24px] font-patua_one pt-4">
-            {greeting}
-            <span className="text-[#8ec87e]">{name}</span>
-            {blob0}
-            <span className="text-[#ffe464]">Python </span>,
-            <span className="text-[#f7df1e]"> JS </span> /
-            <span className="text-[#377cc8]"> TS </span>, and frameworks like
-            <span className="text-[#81e0ff]"> React </span> /
-            <span className="text-[#ffffff]"> NextJS </span>,{blob1}
-            <span className="text-[#0b9dc8]">Docker</span> and
-            <span className="text-[#ff9c08]"> cloud </span>
-            {blob2}
+    <div className="flex flex-col gap-4 pt-6 pb-8 md:pt-8">
+      <h1 className="font-patua_one text-5xl text-yellow md:text-6xl">
+        About Me
+      </h1>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Pane title="about">
+          <p className="font-mono text-base">
+            <a
+              href={affiliation.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-green underline-offset-4 transition-colors hover:text-yellow hover:underline focus-visible:text-yellow"
+            >
+              {affiliation.label} · {affiliation.name}
+            </a>{" "}
+            <span aria-hidden="true">↗</span>
           </p>
-          <p className="text-[#fbf1c7] text-[18px] md:text-[24px] sm:text-[24px] font-patua_one pt-4">
-            {blob3}
+          <p className={bodyClassName}>
+            Based in Kampong Speu, Cambodia. A Linux enthusiast and homelabber,
+            focused on open-source maintenance and hardware tinkering.
           </p>
-        </div>
+          <p className={bodyClassName}>
+            I&apos;m a Year 4 Computer Science student at Angkor Khemara
+            University (AKUKS). My go-to languages include{" "}
+            <span className="text-aqua">Python</span>,{" "}
+            <span className="text-blue">JS</span>/
+            <span className="text-blue">TS</span>, and frameworks like{" "}
+            <span className="text-purple">React</span>/
+            <span className="text-purple">NextJS</span>, and I use
+            containerization with <span className="text-green">Docker</span>,
+            orchestration with <span className="text-blue">Kubernetes</span>, and{" "}
+            <span className="text-purple">.NET</span> on the backend plus{" "}
+            <span className="text-green">cloud</span> servers.
+          </p>
+          <p className={bodyClassName}>
+            Beyond the code, I&apos;m constantly chasing what interests me (not
+            just tech) and sharing knowledge with friends and the community.
+            I&apos;m pumped to join forces on projects that shake things up and
+            make a real difference!
+          </p>
+        </Pane>
+
+        <Pane title="focus">
+          <h2 className="mb-2 font-patua_one text-2xl text-fg0">
+            What I focus on
+          </h2>
+          {focusAreas.map((area) => (
+            <FocusRow key={area.title} area={area} />
+          ))}
+        </Pane>
       </div>
-    </>
+
+      <Pane title="oss">
+        <h2 className="font-patua_one text-2xl text-fg0">Open Source</h2>
+        <p className="mt-1 font-mono text-sm text-gray">$ ls ~/oss</p>
+        <ul className="mt-2 flex flex-col">
+          {openSource.map((item) => (
+            <li
+              key={item.name}
+              className="border-b border-bg3 py-3 last:border-0"
+            >
+              <p className="font-mono text-base break-words text-aqua">
+                {item.url ? (
+                  <>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green underline-offset-4 transition-colors hover:text-yellow hover:underline focus-visible:text-yellow"
+                    >
+                      {item.name}
+                    </a>{" "}
+                    <span aria-hidden="true">↗</span>
+                  </>
+                ) : (
+                  item.name
+                )}
+              </p>
+              <p className="text-[15px] text-fg1">{item.description}</p>
+            </li>
+          ))}
+        </ul>
+      </Pane>
+    </div>
   );
 }

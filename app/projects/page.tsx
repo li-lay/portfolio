@@ -1,14 +1,17 @@
+import ProjectWindow from "@/components/UI/ProjectWindow";
+import { projects } from "@/lib/content";
+
 export default function Projects() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-white text-2xl md:text-4xl mb-4 font-patua_one">
-        Under Construction :)
+    <div className="pt-6 pb-8 md:pt-8">
+      <h1 className="mb-6 font-patua_one text-5xl text-yellow md:text-6xl">
+        Projects
       </h1>
-      <img
-        src="https://i.giphy.com/XZrUw9cTqJ0vi8bmV9.webp"
-        alt="Under Construction GIF"
-        className="max-w-xs md:max-w-md"
-      />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project, i) => (
+          <ProjectWindow key={project.title} project={project} index={i} />
+        ))}
+      </div>
     </div>
   );
 }

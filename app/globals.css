@@ -5,27 +5,104 @@
   src: url("/fonts/PatuaOne-Regular.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @theme {
-  --font-patua_one: "Patua One", serif;
-}
+  --color-bg0: #282828;
+  --color-bg-hard: #1d2021;
+  --color-bg1: #3c3836;
+  --color-bg2: #504945;
+  --color-bg3: #665c54;
+  --color-fg0: #fbf1c7;
+  --color-fg1: #ebdbb2;
+  --color-gray: #bdae93;
+  --color-yellow: #fabd2f;
+  --color-yellow-dim: #d79921;
+  --color-green: #b8bb26;
+  --color-aqua: #8ec07c;
+  --color-blue: #83a598;
+  --color-purple: #d3869b;
+  --color-red: #fb4934;
 
-@theme inline {
-  --animate-aurora: aurora 60s linear infinite;
-  @keyframes aurora {
-    from {
-      background-position: 50% 50%, 50% 50%;
-    }
-    to {
-      background-position: 350% 50%, 350% 50%;
+  --radius-pane: 2px;
+
+  --animate-drag: drag 1.6s ease-in-out infinite;
+
+  @keyframes drag {
+    50% {
+      transform: translateX(4px);
     }
   }
 }
 
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-patua_one: "Patua One", serif;
+}
+
 body {
-  background-color: #282828;
-  overflow: hidden;
+  background-color: var(--color-bg-hard);
+  /* Static depth layer: 22px dot grid + a soft top glow. Painted on the body
+     itself (not a ::before with z-index:-1, which the body background would
+     cover), fixed so it does not scroll with the document. */
+  background-image:
+    radial-gradient(
+      circle at 1px 1px,
+      rgba(102, 92, 84, 0.38) 1px,
+      transparent 0
+    ),
+    radial-gradient(
+      ellipse 90% 55% at 50% -12%,
+      rgba(250, 189, 47, 0.07),
+      transparent 65%
+    );
+  background-size:
+    22px 22px,
+    100% 100%;
+  background-repeat: repeat, no-repeat;
+  background-attachment: fixed;
+  color: var(--color-fg1);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-top: calc(3rem + env(safe-area-inset-top, 0px));
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 2px;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.reveal {
+  animation: rise 0.4s ease-out both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+/* The R3F canvas is sized in device pixels by three.js; never let it spill
+   out of its pane when the container is measured mid-resize. */
+.scene canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .animate-drag {
+    animation: none;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -33,15 +110,15 @@ body {
 }
 ::-webkit-scrollbar-track {
   border-radius: 5px;
-  background-color: #282828;
+  background-color: var(--color-bg0);
 }
 
 ::-webkit-scrollbar-thumb {
   border-radius: 1rem;
-  background-color: #ebdbb2;
-  border: 2px solid #ebdbb2;
+  background-color: var(--color-fg1);
+  border: 2px solid var(--color-fg1);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #fabd2f;
+  background-color: var(--color-yellow);
 }

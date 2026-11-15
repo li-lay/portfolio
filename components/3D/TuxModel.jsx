@@ -8,19 +8,38 @@ Title: Tux
 
 // The new Tux model uses DRACO Compression (better Load Times)
 
-import { useGLTF } from "@react-three/drei";
-import useResponsiveScale from "@/utils/useResponsiveScale";
+import { useLoader } from "@react-three/fiber";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { MODEL_POSITION, MODEL_SCALE } from "./modelMetrics";
+import { useHeadRig, useHeadTracking } from "./useHeadTracking";
 
-export default function TuxModel(props) {
-  const { nodes, materials } = useGLTF("/models/tux.glb");
-  const scale = useResponsiveScale();
+const modelUrl = "/models/tux.glb";
+
+// Self-hosted DRACO decoder (copied to public/draco) so the loader never
+// reaches for the gstatic CDN at runtime.
+let dracoLoader = null;
+function extendLoader(loader) {
+  if (!dracoLoader) {
+    dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath("/draco/");
+  }
+  loader.setDRACOLoader(dracoLoader);
+}
+
+export default function TuxModel({ children, animate = true, ...props }) {
+  const { nodes, materials } = useLoader(GLTFLoader, modelUrl, extendLoader);
+
+  // Vertex-shader head rig (no bones in the GLB) + pointer/idle drive.
+  useHeadRig(materials);
+  useHeadTracking(animate);
+
   return (
-    <group {...props} dispose={null}>
-      <group
-        // position={[0.002, -0.027, -0.719]}
-        // rotation={[-Math.PI / 2, 0, 0]}
-        scale={scale}
-      >
+    // This group is the single offset that re-centres the model: geometry is
+    // 0 … 2.606 tall in raw units, so -1.2926 puts it at ±1.3134. Callers mount
+    // the ground shadow here as a child so it lands at the feet.
+    <group {...props} position={MODEL_POSITION} dispose={null}>
+      <group scale={MODEL_SCALE}>
         <mesh
           castShadow
           receiveShadow
@@ -46,8 +65,9 @@ export default function TuxModel(props) {
           rotation={[-Math.PI / 2, 0, 0]}
         />
       </group>
+      {children}
     </group>
   );
 }
 
-useGLTF.preload("/models/tux.glb");
+useLoader.preload(GLTFLoader, modelUrl, extendLoader);

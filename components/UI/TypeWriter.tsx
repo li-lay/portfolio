@@ -1,18 +1,15 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { TypeAnimation } from "react-type-animation";
 
 interface TypewriterProps {
   words: string[];
-  speed?: any;
+  speed?: ComponentProps<typeof TypeAnimation>["speed"];
   wait?: number;
 }
 
-const Typewriter: React.FC<TypewriterProps> = ({
-  words,
-  speed = 20,
-  wait = 1000,
-}) => {
+const Typewriter = ({ words, speed = 20, wait = 1000 }: TypewriterProps) => {
   const sequence = words.flatMap((word) => [word, wait]);
 
   return (
