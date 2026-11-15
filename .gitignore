@@ -45,3 +45,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# note: lib/git-log.generated.json is committed on purpose. `predev`/`prebuild`
+# rewrite it from git history, so it can show as modified after new commits.
+
+# local tooling artifacts
+.opencode/
+graphify-out/

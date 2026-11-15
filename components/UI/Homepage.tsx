@@ -1,16 +1,20 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import HomeSceneClient from "../3D/HomeSceneClient";
 import Typewriter from "./TypeWriter";
 import Pane from "./Pane";
 import Reveal from "./Reveal";
-import { projects } from "@/lib/content";
+import { now, projects } from "@/lib/content";
 
 const ctaClassName =
   "font-mono text-green underline-offset-4 transition-colors hover:text-yellow hover:underline focus-visible:text-yellow";
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-4 pt-6 pb-8 md:pt-8 md:pb-12">
+    <div
+      style={{ "--ws-accent": "var(--color-yellow)" } as CSSProperties}
+      className="flex flex-col gap-4 pt-6 pb-8 md:pt-8 md:pb-12"
+    >
       <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
         <Reveal className="min-w-0">
           <Pane title="home" className="h-full">
@@ -18,7 +22,7 @@ export default function Home() {
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-gray">$ whoami</p>
-                  <h1 className="mt-1 font-patua_one text-6xl leading-none text-fg0 md:text-8xl">
+                  <h1 className="mt-1 font-patua_one text-6xl leading-none text-accent md:text-8xl">
                     Lilay
                   </h1>
                   <p className="mt-3 text-base text-aqua md:text-lg">
@@ -62,7 +66,13 @@ export default function Home() {
               <p className="mt-5 text-gray">$ uptime</p>
               <p className="text-fg1">daily-driving Linux since high school</p>
 
-              <p className="mt-5 text-gray">$ _</p>
+              <p className="mt-5 text-gray">$ cat ~/now</p>
+              <p className="text-fg1">{now}</p>
+
+              <p className="mt-5 text-gray">
+                {"$ "}
+                <span className="caret" aria-hidden="true" />
+              </p>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm md:text-base">

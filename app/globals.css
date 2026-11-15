@@ -42,6 +42,49 @@
   --font-patua_one: "Patua One", serif;
 }
 
+/* ── Gruvbox Light ───────────────────────────────────────────────────────────
+   Opt-in (Konami code or the command palette), persisted in localStorage.
+   Dark stays the default and carries no attribute. `html[data-theme]` beats
+   the `:root` specificity of the tokens Tailwind emits from @theme, so every
+   utility that reads these variables follows the switch. */
+html[data-theme="gruvbox-light"] {
+  --color-bg-hard: #f9f5d7;
+  --color-bg0: #fbf1c7;
+  --color-bg1: #f2e5bc;
+  --color-bg2: #ebdbb2;
+  --color-bg3: #d5c4a1;
+  --color-fg0: #282828;
+  --color-fg1: #3c3836;
+  --color-gray: #665c54;
+  /* Text-safe overrides: the stock Gruvbox-light green/yellow/aqua land at
+     3.0–4.0:1 on bg1. These keep the hue but clear 4.5:1 on both bg1 and
+     bg-hard (dark theme is untouched). */
+  --color-yellow: #8a5a00;
+  --color-yellow-dim: #d79921;
+  --color-green: #526600;
+  --color-aqua: #356b47;
+  --color-blue: #076678;
+  --color-purple: #8f3f71;
+  --color-red: #9d0006;
+
+  color-scheme: light;
+}
+
+/* Dot grid + top glow repainted for the light background. */
+html[data-theme="gruvbox-light"] body {
+  background-image:
+    radial-gradient(
+      circle at 1px 1px,
+      rgba(80, 73, 69, 0.35) 1px,
+      transparent 0
+    ),
+    radial-gradient(
+      ellipse 90% 55% at 50% -12%,
+      rgba(181, 118, 20, 0.1),
+      transparent 65%
+    );
+}
+
 body {
   background-color: var(--color-bg-hard);
   /* Static depth layer: 22px dot grid + a soft top glow. Painted on the body
@@ -74,6 +117,135 @@ body {
   outline-offset: 2px;
 }
 
+::selection {
+  background: var(--color-yellow);
+  color: var(--color-bg0);
+}
+
+input,
+textarea {
+  caret-color: var(--color-yellow);
+}
+
+/* Blinking block caret used at the end of transcript prompts. */
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  background: var(--color-fg1);
+  vertical-align: -0.15em;
+  animation: blink 1s step-end infinite;
+}
+
+/* Per-workspace accent, set inline on each page's root wrapper. */
+.pane-accent {
+  border-color: var(--ws-accent, var(--color-bg3));
+}
+
+.text-accent {
+  color: var(--ws-accent, var(--color-yellow));
+}
+
+/* Singleton chip left bottom-right by a closed pane (lib/panes.ts). It is a
+   real <button>, so it is reachable with Tab and activates with Enter/Space. */
+.pane-restore-chip {
+  position: fixed;
+  right: max(0.75rem, env(safe-area-inset-right, 0px));
+  bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  border: 2px solid var(--color-bg3);
+  border-radius: var(--radius-pane);
+  background: var(--color-bg1);
+  color: var(--color-fg1);
+  padding: 0.375rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.pane-restore-chip:hover,
+.pane-restore-chip:focus-visible {
+  color: var(--color-yellow);
+  border-color: var(--color-yellow);
+}
+
+html[data-theme="gruvbox-light"] .pane-restore-chip {
+  box-shadow: 0 6px 20px rgba(80, 73, 69, 0.2);
+}
+
+/* `ls -la` rendering of the project grid, toggled from /projects. */
+html[data-proj-view="list"] .project-grid {
+  display: block;
+}
+
+html[data-proj-view="list"] .project-grid article {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  border: 2px solid var(--color-bg3);
+  border-radius: var(--radius-pane);
+}
+
+html[data-proj-view="list"] .project-grid article > section {
+  border: 0;
+  border-radius: 0;
+}
+
+html[data-proj-view="list"] .project-grid article h2 {
+  display: inline;
+  font-size: 0.95rem;
+  font-family: var(--font-mono);
+}
+
+html[data-proj-view="list"] [data-window-controls] {
+  display: none;
+}
+
+/* ── Draggable panes (palette: `unlock layout`) ─────────────────────────────
+   PaneDrag.tsx owns the pointer handling; CSS only supplies the affordance and
+   the dragging state. Only desktop, fine pointers get a grab cursor. */
+[data-pane] {
+  position: relative;
+}
+
+@media (min-width: 768px) and (pointer: fine) {
+  html[data-layout="unlocked"] [data-pane-header] {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  html[data-layout="unlocked"] [data-pane-header]:active {
+    cursor: grabbing;
+  }
+}
+
+html.pane-dragging,
+html.pane-dragging * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+/* Block caret (NORMAL) and bar caret (INSERT) in the :vim easter egg. */
+.vim-caret {
+  background: var(--color-fg1);
+  color: var(--color-bg0);
+}
+
+.vim-caret-insert {
+  box-shadow: inset 2px 0 var(--color-fg1);
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -100,8 +272,13 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .reveal,
-  .animate-drag {
+  .animate-drag,
+  .caret {
     animation: none;
+  }
+
+  .caret {
+    opacity: 1;
   }
 }
 

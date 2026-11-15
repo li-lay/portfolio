@@ -1,0 +1,152 @@
+[
+  {
+    "hash": "1ed1317",
+    "date": "2026-11-15T21:02:10+07:00",
+    "subject": "feat: rebuild portfolio as Gruvbox tiling-WM with live site content"
+  },
+  {
+    "hash": "e4722ab",
+    "date": "2025-12-05T18:51:56+07:00",
+    "subject": "implement fixes for 3 packages vulnerability"
+  },
+  {
+    "hash": "17a9a5a",
+    "date": "2025-09-30T09:23:18+07:00",
+    "subject": "Contact page content"
+  },
+  {
+    "hash": "bdd22f3",
+    "date": "2025-09-30T08:43:13+07:00",
+    "subject": "rollback package.json"
+  },
+  {
+    "hash": "922cd0b",
+    "date": "2025-09-29T16:42:12+07:00",
+    "subject": "Long time no see"
+  },
+  {
+    "hash": "6ca4e8d",
+    "date": "2025-08-07T11:35:43+07:00",
+    "subject": "Merge pull request #18 from li-lay/readme_update"
+  },
+  {
+    "hash": "a279128",
+    "date": "2025-08-07T11:34:28+07:00",
+    "subject": "README updates"
+  },
+  {
+    "hash": "409d9df",
+    "date": "2025-08-04T13:11:31+07:00",
+    "subject": "Merge pull request #14 from li-lay/snyk-upgrade-8fd9da314097d3afacc0caad8701a766"
+  },
+  {
+    "hash": "e2a1946",
+    "date": "2025-08-04T13:11:16+07:00",
+    "subject": "Merge pull request #13 from li-lay/snyk-upgrade-ba96b2780f9eb7ca68df35d284603368"
+  },
+  {
+    "hash": "4490a13",
+    "date": "2025-08-04T13:11:04+07:00",
+    "subject": "Merge branch 'main' into snyk-upgrade-8fd9da314097d3afacc0caad8701a766"
+  },
+  {
+    "hash": "f0ba5fc",
+    "date": "2025-08-04T13:08:44+07:00",
+    "subject": "Merge pull request #15 from li-lay/snyk-upgrade-ce6de9934636d0a9d258910fb5afab88"
+  },
+  {
+    "hash": "04154d7",
+    "date": "2025-08-04T13:08:30+07:00",
+    "subject": "Merge pull request #16 from li-lay/snyk-upgrade-cb2b5b15257316a6c2af3f3c3e7c9d35"
+  },
+  {
+    "hash": "c2515f1",
+    "date": "2025-08-02T09:45:53Z",
+    "subject": "fix: upgrade @types/three from 0.177.0 to 0.178.1"
+  },
+  {
+    "hash": "b53cafb",
+    "date": "2025-08-02T09:45:50Z",
+    "subject": "fix: upgrade @opennextjs/cloudflare from 1.3.1 to 1.5.1"
+  },
+  {
+    "hash": "94f4049",
+    "date": "2025-08-02T09:45:47Z",
+    "subject": "fix: upgrade @react-three/drei from 10.3.0 to 10.5.0"
+  },
+  {
+    "hash": "bb16b10",
+    "date": "2025-08-02T09:45:43Z",
+    "subject": "fix: upgrade motion from 12.19.1 to 12.23.3"
+  },
+  {
+    "hash": "085cab7",
+    "date": "2025-07-22T17:05:07+07:00",
+    "subject": "create aboutscene"
+  },
+  {
+    "hash": "18e8de5",
+    "date": "2025-07-16T17:11:27+07:00",
+    "subject": "Merge pull request #3 from li-lay/snyk-upgrade-3a286527b2597192ff8d8e6701eb97aa"
+  },
+  {
+    "hash": "2a55ac4",
+    "date": "2025-07-16T07:39:38Z",
+    "subject": "fix: upgrade motion from 12.18.1 to 12.19.1"
+  },
+  {
+    "hash": "4959bd6",
+    "date": "2025-06-29T09:45:16+07:00",
+    "subject": "add responsiveness to about page content"
+  },
+  {
+    "hash": "94e9559",
+    "date": "2025-06-28T21:35:29+07:00",
+    "subject": "about page updates"
+  },
+  {
+    "hash": "976adee",
+    "date": "2025-06-24T20:55:42+07:00",
+    "subject": "wrangler enable Observability"
+  },
+  {
+    "hash": "0e10294",
+    "date": "2025-06-24T17:36:14+07:00",
+    "subject": "apply custom font"
+  },
+  {
+    "hash": "9fb43df",
+    "date": "2025-06-24T17:27:02+07:00",
+    "subject": "Merge pull request #2 from samithseu/main"
+  },
+  {
+    "hash": "8ba2c79",
+    "date": "2025-06-24T17:08:05+07:00",
+    "subject": "update wrangler worker name"
+  },
+  {
+    "hash": "0070b09",
+    "date": "2025-06-24T16:05:54+07:00",
+    "subject": "[UI]: fixed the white background for `light-mode` devices (_not really completed_)"
+  },
+  {
+    "hash": "50d6781",
+    "date": "2025-06-24T15:30:43+07:00",
+    "subject": "[UI]: removed little blue shadow below header"
+  },
+  {
+    "hash": "0860086",
+    "date": "2025-06-24T14:08:08+07:00",
+    "subject": "integrate OpenNext"
+  },
+  {
+    "hash": "cc81caf",
+    "date": "2025-06-24T13:44:08+07:00",
+    "subject": "added patua one font"
+  },
+  {
+    "hash": "abd40e4",
+    "date": "2025-06-24T13:32:11+07:00",
+    "subject": "init lilay.dev"
+  }
+]

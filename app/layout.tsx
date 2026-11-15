@@ -2,6 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Statusline from "@/components/UI/Statusline";
+import TabTitle from "@/components/UI/TabTitle";
+import CommandPaletteLauncher from "@/components/UI/CommandPaletteLauncher";
+import KonamiTheme from "@/components/UI/KonamiTheme";
+import PaneDrag from "@/components/UI/PaneDrag";
 import { profile } from "@/lib/content";
 
 const geistSans = Geist({
@@ -65,6 +69,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="antialiased">
+        <TabTitle />
+        <KonamiTheme />
+        <PaneDrag />
+        <CommandPaletteLauncher />
         <a
           href="#main-content"
           className="sr-only rounded-pane border-2 border-bg3 bg-bg1 px-3 py-2 font-mono text-sm text-fg0 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:text-yellow"

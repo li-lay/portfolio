@@ -1,13 +1,18 @@
+import type { CSSProperties } from "react";
 import Pane from "@/components/UI/Pane";
 import SocialRow from "@/components/UI/SocialRow";
+import CopyEmail from "@/components/UI/CopyEmail";
 import Fortune from "@/components/UI/Fortune";
 import Typewriter from "@/components/UI/TypeWriter";
 import { socialLinks } from "@/lib/content";
 
 export default function Contact() {
   return (
-    <div className="flex flex-col gap-4 pt-6 pb-8 md:pt-8">
-      <h1 className="font-patua_one text-5xl text-yellow md:text-6xl">
+    <div
+      style={{ "--ws-accent": "var(--color-purple)" } as CSSProperties}
+      className="flex flex-col gap-4 pt-6 pb-8 md:pt-8"
+    >
+      <h1 className="font-patua_one text-5xl text-accent md:text-6xl">
         Get In Touch
       </h1>
       <p className="max-w-2xl font-patua_one text-lg text-fg1 md:text-xl">
@@ -25,9 +30,13 @@ export default function Contact() {
         <Pane title="channels">
           <h2 className="mb-2 font-patua_one text-2xl text-fg0">channels</h2>
           <div className="flex flex-col">
-            {socialLinks.map((social) => (
-              <SocialRow key={social.name} social={social} />
-            ))}
+            {socialLinks.map((social) =>
+              social.name === "Email" ? (
+                <CopyEmail key={social.name} social={social} />
+              ) : (
+                <SocialRow key={social.name} social={social} />
+              ),
+            )}
           </div>
         </Pane>
 

@@ -15,6 +15,8 @@ import type { Material, WebGLProgramParametersWithUniforms } from "three";
 export type HeadUniforms = {
   uYaw: { value: number };
   uPitch: { value: number };
+  /** 1 at rest; < 1 squashes the whole head toward HEAD_PIVOT (blink / click). */
+  uHeadScale: { value: number };
 };
 
 /** Limits, in radians (14° yaw / 8° pitch). */
@@ -29,8 +31,30 @@ const IDLE_PITCH = 0.03;
 /** Damping factor per second — 6 ⇒ ~63% of the way in 1/6 s. */
 const DAMPING = 6;
 
+/** Blink: 1 → 1 - BLINK_SQUASH → 1 over BLINK_SECONDS, every 4–7 s. */
+const BLINK_SECONDS = 0.14;
+const BLINK_SQUASH = 0.035;
+const BLINK_MIN = 4;
+const BLINK_MAX = 7;
+
+/** Click wobble impulse (rad/s) and how fast it bleeds off. */
+const CLICK_YAW_VEL = 2.5;
+const CLICK_PITCH_VEL = 1.2;
+const WOBBLE_DAMPING = 7;
+
+/** A wobble may overshoot the look limits slightly, but not bend the neck. */
+const WOBBLE_YAW_LIMIT = MAX_YAW * 1.6;
+const WOBBLE_PITCH_LIMIT = MAX_PITCH * 1.6;
+
 /** Shared by all three Tux materials so a single write drives the whole head. */
-const headUniforms: HeadUniforms = { uYaw: { value: 0 }, uPitch: { value: 0 } };
+const headUniforms: HeadUniforms = {
+  uYaw: { value: 0 },
+  uPitch: { value: 0 },
+  uHeadScale: { value: 1 },
+};
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
 const PROGRAM_CACHE_KEY = "tux-head-rig";
 
@@ -38,6 +62,7 @@ const PROGRAM_CACHE_KEY = "tux-head-rig";
 const HEAD_RIG_GLSL = /* glsl */ `
 uniform float uYaw;
 uniform float uPitch;
+uniform float uHeadScale;
 const vec3 HEAD_PIVOT = vec3(0.0, 9.695, 64.0);
 
 // Yaw about local Z (local Z is world up), pitch about local X. mat3 args are
@@ -55,8 +80,10 @@ const NORMAL_PATCH = /* glsl */ `#include <beginnormal_vertex>
   mat3 headRot = headMatrix(uYaw, uPitch);
   objectNormal = normalize(mix(objectNormal, headRot * objectNormal, headBlend));`;
 
+// The squash is applied to the head's offset from the pivot, not to world
+// space, so only the rigged region shrinks while the body stays put.
 const POSITION_PATCH = /* glsl */ `#include <begin_vertex>
-  transformed = mix(transformed, headRot * (position - HEAD_PIVOT) + HEAD_PIVOT, headBlend);`;
+  transformed = mix(transformed, headRot * ((position - HEAD_PIVOT) * uHeadScale) + HEAD_PIVOT, headBlend);`;
 
 type PatchableMaterial = Material & { __headRigPatched?: boolean };
 
@@ -68,6 +95,7 @@ function patchMaterial(material: PatchableMaterial | undefined) {
     // Same uniform objects for every material ⇒ one update moves the whole head.
     shader.uniforms.uYaw = headUniforms.uYaw;
     shader.uniforms.uPitch = headUniforms.uPitch;
+    shader.uniforms.uHeadScale = headUniforms.uHeadScale;
 
     shader.vertexShader = shader.vertexShader
       .replace("#include <common>", `#include <common>\n${HEAD_RIG_GLSL}`)
@@ -110,6 +138,13 @@ export function useHeadTracking(enabled = true) {
   const lastMoveAt = useRef(-Infinity);
   const reducedMotion = useRef(false);
 
+  // Click wobble: integrated into the yaw/pitch values, then bled off.
+  const yawVel = useRef(0);
+  const pitchVel = useRef(0);
+  // Squash (blink or click) start time on the shared clock; null ⇒ at rest.
+  const squashAt = useRef<number | null>(null);
+  const nextBlinkAt = useRef<number | null>(null);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -120,6 +155,10 @@ export function useHeadTracking(enabled = true) {
       if (event.matches) {
         headUniforms.uYaw.value = 0;
         headUniforms.uPitch.value = 0;
+        headUniforms.uHeadScale.value = 1;
+        yawVel.current = 0;
+        pitchVel.current = 0;
+        squashAt.current = null;
       }
     };
     mq.addEventListener("change", onChange);
@@ -139,18 +178,27 @@ export function useHeadTracking(enabled = true) {
     const onLeave = () => {
       hovered.current = false;
     };
+    // Click nudge. No preventDefault: OrbitControls still gets the drag.
+    const onDown = () => {
+      if (!enabled || reducedMotion.current) return;
+      yawVel.current += CLICK_YAW_VEL;
+      pitchVel.current += CLICK_PITCH_VEL;
+      squashAt.current = clock.elapsedTime;
+    };
 
     canvas.addEventListener("pointermove", onMove);
     canvas.addEventListener("pointerenter", onEnter);
     canvas.addEventListener("pointerleave", onLeave);
     canvas.addEventListener("pointercancel", onLeave);
+    canvas.addEventListener("pointerdown", onDown);
     return () => {
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerenter", onEnter);
       canvas.removeEventListener("pointerleave", onLeave);
       canvas.removeEventListener("pointercancel", onLeave);
+      canvas.removeEventListener("pointerdown", onDown);
     };
-  }, [gl, clock]);
+  }, [gl, clock, enabled]);
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
@@ -174,5 +222,61 @@ export function useHeadTracking(enabled = true) {
     const k = Math.min(1, delta * DAMPING);
     headUniforms.uYaw.value += (targetYaw - headUniforms.uYaw.value) * k;
     headUniforms.uPitch.value += (targetPitch - headUniforms.uPitch.value) * k;
+
+    const motion = enabled && !reducedMotion.current;
+
+    // Click wobble: integrate the impulse, then let it decay. The damping above
+    // keeps pulling the values back toward the pointer target.
+    if (motion) {
+      headUniforms.uYaw.value += yawVel.current * delta;
+      headUniforms.uPitch.value += pitchVel.current * delta;
+
+      const decay = Math.exp(-WOBBLE_DAMPING * delta);
+      yawVel.current *= decay;
+      pitchVel.current *= decay;
+      if (Math.abs(yawVel.current) < 0.01) yawVel.current = 0;
+      if (Math.abs(pitchVel.current) < 0.01) pitchVel.current = 0;
+
+      headUniforms.uYaw.value = clamp(
+        headUniforms.uYaw.value,
+        -WOBBLE_YAW_LIMIT,
+        WOBBLE_YAW_LIMIT,
+      );
+      headUniforms.uPitch.value = clamp(
+        headUniforms.uPitch.value,
+        -WOBBLE_PITCH_LIMIT,
+        WOBBLE_PITCH_LIMIT,
+      );
+    } else {
+      yawVel.current = 0;
+      pitchVel.current = 0;
+    }
+
+    // Blink scheduling lives on the shared clock — no timers of our own.
+    let squash = 0;
+    if (motion) {
+      if (nextBlinkAt.current === null) {
+        nextBlinkAt.current =
+          t + BLINK_MIN + Math.random() * (BLINK_MAX - BLINK_MIN);
+      }
+      if (t >= nextBlinkAt.current) {
+        squashAt.current = t;
+        nextBlinkAt.current =
+          t + BLINK_MIN + Math.random() * (BLINK_MAX - BLINK_MIN);
+      }
+
+      if (squashAt.current !== null) {
+        const age = t - squashAt.current;
+        if (age >= 0 && age <= BLINK_SECONDS) {
+          // Triangle 0 → 1 → 0 across the blink window.
+          squash = 1 - Math.abs((age / BLINK_SECONDS) * 2 - 1);
+        }
+      }
+    } else {
+      squashAt.current = null;
+      nextBlinkAt.current = null;
+    }
+
+    headUniforms.uHeadScale.value = 1 - BLINK_SQUASH * squash;
   });
 }

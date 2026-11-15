@@ -43,6 +43,8 @@ export const profile: Profile = {
     "Lilay's personal portfolio - Year 4 Computer Science student passionate about DevOps, Linux, and open-source projects.",
 };
 
+export const now = "Building the AKUKS library and POS systems.";
+
 export const socialLinks: SocialLink[] = [
   {
     name: "GitHub",

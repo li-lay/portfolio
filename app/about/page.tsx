@@ -1,13 +1,46 @@
+import { Fragment, type CSSProperties } from "react";
+import Link from "next/link";
 import Pane from "@/components/UI/Pane";
 import FocusRow from "@/components/UI/FocusRow";
-import { affiliation, focusAreas, openSource } from "@/lib/content";
+import {
+  affiliation,
+  focusAreas,
+  now,
+  openSource,
+  profile,
+} from "@/lib/content";
 
 const bodyClassName = "mt-4 text-base leading-relaxed text-fg1 md:text-lg";
 
+const TUX = `   .--.
+  |o_o |
+  |:_/ |
+ //   \\ \\
+(|     | )
+/'\\_   _/\`\\
+\\___)=(___/`;
+
+const buildDate = (process.env.NEXT_PUBLIC_BUILD_TIME ?? "").slice(0, 10) || "dev";
+
+const neofetch: Array<[string, string]> = [
+  ["OS", "lilay.dev · Next.js 15"],
+  ["Host", "Angkor Khemara University (AKUKS)"],
+  ["Kernel", buildDate],
+  ["Shell", "neovim"],
+  ["DE", "Gruvbox"],
+  ["Terminal", "Web"],
+  ["Languages", "Python, JS, TS, .NET"],
+  ["Uptime", "daily-driving Linux since high school"],
+  ["Location", profile.location],
+];
+
 export default function About() {
   return (
-    <div className="flex flex-col gap-4 pt-6 pb-8 md:pt-8">
-      <h1 className="font-patua_one text-5xl text-yellow md:text-6xl">
+    <div
+      style={{ "--ws-accent": "var(--color-green)" } as CSSProperties}
+      className="flex flex-col gap-4 pt-6 pb-8 md:pt-8"
+    >
+      <h1 className="font-patua_one text-5xl text-accent md:text-6xl">
         About Me
       </h1>
 
@@ -47,6 +80,9 @@ export default function About() {
             I&apos;m pumped to join forces on projects that shake things up and
             make a real difference!
           </p>
+          <p className="mt-4 font-mono text-sm text-gray">
+            <span className="text-green">now</span> {now}
+          </p>
         </Pane>
 
         <Pane title="focus">
@@ -58,6 +94,34 @@ export default function About() {
           ))}
         </Pane>
       </div>
+
+      <Pane title="neofetch">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start">
+          <pre
+            aria-hidden="true"
+            className="shrink-0 overflow-x-auto text-[11px] leading-tight text-green md:text-xs"
+          >
+            {TUX}
+          </pre>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 font-mono text-[11px] leading-tight md:text-xs">
+            {neofetch.map(([key, value]) => (
+              <Fragment key={key}>
+                <dt className="text-yellow">{key}</dt>
+                <dd className="break-words text-fg1">{value}</dd>
+              </Fragment>
+            ))}
+          </dl>
+        </div>
+        <p className="mt-3 font-mono text-xs md:text-sm">
+          <Link
+            href="/log"
+            className="text-green underline-offset-4 transition-colors hover:text-yellow hover:underline focus-visible:text-yellow"
+          >
+            [ git log ]
+          </Link>{" "}
+          <span className="text-gray">the real commit history</span>
+        </p>
+      </Pane>
 
       <Pane title="oss">
         <h2 className="font-patua_one text-2xl text-fg0">Open Source</h2>

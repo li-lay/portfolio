@@ -17,6 +17,14 @@ const quotes = [
   '"The future belongs to those who believe in the beauty of their dreams." - Eleanor Roosevelt',
 ];
 
+const TUX = `   .--.
+  |o_o |
+  |:_/ |
+ //   \\ \\
+(|     | )
+/'\\_   _/\`\\
+\\___)=(___/`;
+
 export default function Fortune() {
   const [quote, setQuote] = useState<string | null>(null);
 
@@ -25,11 +33,19 @@ export default function Fortune() {
   }, []);
 
   return (
-    <div className="min-w-0">
-      <p className="font-mono text-gray">$ fortune</p>
-      <p className="mt-2 break-words font-sans text-base leading-relaxed text-fg1">
-        {quote ?? "\u00a0"}
-      </p>
+    <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start">
+      <pre
+        aria-hidden="true"
+        className="shrink-0 text-[10px] leading-tight text-green md:text-xs"
+      >
+        {TUX}
+      </pre>
+      <div className="min-w-0">
+        <p className="font-mono text-gray">$ fortune</p>
+        <p className="mt-2 break-words font-sans text-base leading-relaxed text-fg1">
+          {quote ?? "\u00a0"}
+        </p>
+      </div>
     </div>
   );
 }
