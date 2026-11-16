@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Statusline from "@/components/UI/Statusline";
 import TabTitle from "@/components/UI/TabTitle";
@@ -15,9 +16,21 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// Iosevka ships ~24k glyphs upstream, so the file in assets/fonts/iosevka/
+// is a subset (see the README in public/fonts/iosevka/). Weight 400 only:
+// nothing in the UI uses mono bold, and the browser may synthesise it.
+const iosevka = localFont({
+  src: [
+    {
+      path: "../assets/fonts/iosevka/iosevka-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-iosevka",
+  display: "swap",
+  preload: true,
+  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
 });
 
 export const viewport: Viewport = {
@@ -69,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${geistSans.variable} ${iosevka.variable}`}>
       <body className="antialiased">
         <TabTitle />
         <KonamiTheme />

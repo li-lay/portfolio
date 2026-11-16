@@ -1,5 +1,10 @@
 [
   {
+    "hash": "211847b",
+    "date": "2026-11-16T11:48:42+07:00",
+    "subject": "feat: add keyboard navigation, shortcut discovery and focus styling"
+  },
+  {
     "hash": "c341dbe",
     "date": "2026-11-15T22:48:24+07:00",
     "subject": "feat: add shell quirks, command palette, themes and git log"
@@ -143,10 +148,5 @@
     "hash": "0860086",
     "date": "2025-06-24T14:08:08+07:00",
     "subject": "integrate OpenNext"
-  },
-  {
-    "hash": "cc81caf",
-    "date": "2025-06-24T13:44:08+07:00",
-    "subject": "added patua one font"
   }
 ]
