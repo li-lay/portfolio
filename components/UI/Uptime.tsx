@@ -12,16 +12,31 @@ function format(ms: number): string {
   return `up ${minutes}m`;
 }
 
-export default function Uptime({ builtAt }: { builtAt: string }) {
-  const [label, setLabel] = useState<string>("");
+const builtFrom = (builtAt: string): number => new Date(builtAt).getTime();
+
+export default function Uptime({
+  builtAt,
+  className,
+}: {
+  builtAt: string;
+  /** Overrides the statusline's responsive visibility when reused elsewhere. */
+  className?: string;
+}) {
+  // Seed from the build stamp so the prerendered HTML carries a real value;
+  // the effect below takes over on the client. `suppressHydrationWarning`
+  // covers the text drift between prerender and hydration.
+  const [label, setLabel] = useState<string>(() => {
+    const built = builtFrom(builtAt);
+    return Number.isFinite(built) ? format(Date.now() - built) : "";
+  });
 
   useEffect(() => {
-    const built = new Date(builtAt).getTime();
+    const built = builtFrom(builtAt);
     let id: ReturnType<typeof setTimeout>;
 
     const tick = () => {
       const now = Date.now();
-      setLabel(format(now - built));
+      if (Number.isFinite(built)) setLabel(format(now - built));
       id = setTimeout(tick, 60000 - (now % 60000) + 50);
     };
 
@@ -32,7 +47,7 @@ export default function Uptime({ builtAt }: { builtAt: string }) {
   return (
     <span
       suppressHydrationWarning
-      className="hidden font-mono text-sm text-gray sm:inline"
+      className={className ?? "hidden font-mono text-sm text-gray sm:inline"}
     >
       {label}
     </span>

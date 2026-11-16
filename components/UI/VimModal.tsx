@@ -48,6 +48,8 @@ function clampCol(line: string, col: number, mode: Mode): number {
 export default function VimModal({ onClose }: { onClose: () => void }) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<HTMLPreElement>(null);
+  const caretRef = useRef<HTMLSpanElement>(null);
   const [buffer, setBuffer] = useState<Buffer>(() => ({
     lines: captureBuffer(),
     line: 0,
@@ -87,6 +89,32 @@ export default function VimModal({ onClose }: { onClose: () => void }) {
     const timer = window.setTimeout(() => setMessage(null), 1500);
     return () => window.clearTimeout(timer);
   }, [message]);
+
+  // Keep the caret visible inside the editor viewport. Offsets are computed
+  // against the `<pre>` box and assigned to its scrollTop/scrollLeft directly,
+  // so neither the page nor the overlay scrolls. `buffer` changes on every
+  // normal-mode move and insert-mode edit (line, col, and text), so this runs
+  // after each of them.
+  useEffect(() => {
+    const editor = editorRef.current;
+    const caret = caretRef.current;
+    if (!editor || !caret) return;
+
+    const caretBox = caret.getBoundingClientRect();
+    const box = editor.getBoundingClientRect();
+
+    if (caretBox.top < box.top) {
+      editor.scrollTop -= box.top - caretBox.top;
+    } else if (caretBox.bottom > box.bottom) {
+      editor.scrollTop += caretBox.bottom - box.bottom;
+    }
+
+    if (caretBox.left < box.left) {
+      editor.scrollLeft -= box.left - caretBox.left;
+    } else if (caretBox.right > box.right) {
+      editor.scrollLeft += caretBox.right - box.right;
+    }
+  }, [buffer]);
 
   useEffect(() => {
     if (!promptOpen) return;
@@ -325,8 +353,9 @@ export default function VimModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <pre
+          ref={editorRef}
           aria-hidden="true"
-          className="max-h-[56vh] min-h-[40vh] overflow-auto p-3 text-[13px] leading-[1.45] whitespace-pre text-fg1"
+          className="max-h-[56vh] min-h-[40vh] overflow-auto overscroll-contain p-3 text-[13px] leading-[1.45] whitespace-pre text-fg1"
         >
           {buffer.lines.map((line, i) => (
             <div key={i} className="min-h-[1.45em]">
@@ -334,9 +363,11 @@ export default function VimModal({ onClose }: { onClose: () => void }) {
                 <>
                   {line.slice(0, buffer.col)}
                   {mode === "insert" ? (
-                    <span className="vim-caret-insert">{line.charAt(buffer.col) || " "}</span>
+                    <span ref={caretRef} className="vim-caret-insert">
+                      {line.charAt(buffer.col) || " "}
+                    </span>
                   ) : (
-                    <span className="vim-caret">
+                    <span ref={caretRef} className="vim-caret">
                       {line.charAt(buffer.col) || " "}
                     </span>
                   )}

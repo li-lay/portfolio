@@ -4,13 +4,14 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent } from "react";
-import { projects } from "@/lib/content";
+import { socialLinks } from "@/lib/content";
 import {
   isLayoutUnlocked,
   resetLayout,
   toggleLayout,
 } from "@/lib/layout";
 import { closeLastPane } from "@/lib/panes";
+import { openHelp } from "@/lib/palette";
 import { currentTheme, toggleTheme, type Theme } from "@/lib/theme";
 
 // The `:vim` easter egg is pulled in only when its command runs, so it never
@@ -69,6 +70,8 @@ export default function CommandPalette({
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const [copied, setCopied] = useState(false);
@@ -141,28 +144,16 @@ export default function CommandPalette({
       },
     ];
 
-    for (const project of projects) {
-      const { title, demo, source } = project;
-      const tech = project.tech.join(" ");
-
-      if (demo) {
-        list.push({
-          id: `demo-${title}`,
-          label: `open ${title} ↗`,
-          hint: "demo",
-          keywords: tech,
-          run: () => openExternal(demo),
-        });
-      }
-      if (source) {
-        list.push({
-          id: `source-${title}`,
-          label: `open ${title} (src) ↗`,
-          hint: "source",
-          keywords: tech,
-          run: () => openExternal(source),
-        });
-      }
+    // Socials, in authoring order. Email stays as the `copy email` action.
+    for (const link of socialLinks) {
+      if (link.name === "Email") continue;
+      list.push({
+        id: `social-${link.name}`,
+        label: `open ${link.name} ↗`,
+        hint: "social",
+        keywords: "external profile contact link",
+        run: () => openExternal(link.url),
+      });
     }
 
     list.push(
@@ -187,7 +178,6 @@ export default function CommandPalette({
         label: unlocked ? "lock layout" : "unlock layout",
         hint: unlocked ? "static panes" : "drag panes",
         keywords: "draggable windows move position arrange",
-        keepOpen: true,
         run: () => setUnlocked(toggleLayout()),
       },
       {
@@ -196,6 +186,13 @@ export default function CommandPalette({
         hint: "editor",
         keywords: "neovim easter egg modal buffer text",
         run: () => setVimOpen(true),
+      },
+      {
+        id: "help",
+        label: "help",
+        hint: "?",
+        keywords: "shortcuts keys keyboard cheatsheet",
+        run: () => openHelp(),
       },
       {
         id: "reset-layout",
@@ -226,6 +223,29 @@ export default function CommandPalette({
   }, [commands, query]);
 
   const selected = results.length ? Math.min(index, results.length - 1) : -1;
+
+  // Keep the active option inside the list's own scroll box. Computing the
+  // offsets by hand (instead of scrollIntoView) guarantees the page behind the
+  // dialog never scrolls, and wrap-around arrows bring the new row into view
+  // because the effect follows `selected`. `query` re-runs it so a filtered
+  // list whose scrollTop survived the last keystroke snaps back to its active
+  // row.
+  useEffect(() => {
+    if (!open || selected < 0) return;
+
+    const option = optionRefs.current[selected];
+    const container = listRef.current;
+    if (!option || !container) return;
+
+    const item = option.getBoundingClientRect();
+    const box = container.getBoundingClientRect();
+
+    if (item.top < box.top) {
+      container.scrollTop -= box.top - item.top;
+    } else if (item.bottom > box.bottom) {
+      container.scrollTop += item.bottom - box.bottom;
+    }
+  }, [open, selected, query]);
 
   const runCommand = useCallback(
     (command: Command) => {
@@ -368,6 +388,7 @@ export default function CommandPalette({
         )}
 
         <ul
+          ref={listRef}
           id={LIST_ID}
           role="listbox"
           aria-label="Commands"
@@ -379,6 +400,9 @@ export default function CommandPalette({
               id={optionId(i)}
               role="option"
               aria-selected={i === selected}
+              ref={(node) => {
+                optionRefs.current[i] = node;
+              }}
               onMouseEnter={() => setIndex(i)}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => runCommand(command)}

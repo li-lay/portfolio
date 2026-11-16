@@ -133,9 +133,9 @@ export function useHeadTracking(enabled = true) {
   const gl = useThree((state) => state.gl);
   const clock = useThree((state) => state.clock);
 
-  const hovered = useRef(false);
-  // -Infinity ⇒ idle sway from the first frame.
-  const lastMoveAt = useRef(-Infinity);
+  // Last viewport-space pointer sample; `t` is -Infinity ⇒ idle from frame one
+  // (and no sample is dropped when the cursor leaves the canvas).
+  const pointer = useRef({ x: 0, y: 0, t: -Infinity });
   const reducedMotion = useRef(false);
 
   // Click wobble: integrated into the yaw/pitch values, then bled off.
@@ -167,17 +167,17 @@ export function useHeadTracking(enabled = true) {
 
   useEffect(() => {
     const canvas = gl.domElement;
-    const onMove = () => {
-      hovered.current = true;
-      lastMoveAt.current = clock.elapsedTime;
+
+    // Track the cursor across the whole page (passive ⇒ never blocks scrolling)
+    // and keep the last sample: leaving the canvas must not recentre the head.
+    const onMove = (event: PointerEvent) => {
+      pointer.current = {
+        x: event.clientX,
+        y: event.clientY,
+        t: clock.elapsedTime,
+      };
     };
-    const onEnter = () => {
-      hovered.current = true;
-    };
-    // R3F keeps the last NDC pointer value; drop it so the head recentres.
-    const onLeave = () => {
-      hovered.current = false;
-    };
+
     // Click nudge. No preventDefault: OrbitControls still gets the drag.
     const onDown = () => {
       if (!enabled || reducedMotion.current) return;
@@ -186,16 +186,10 @@ export function useHeadTracking(enabled = true) {
       squashAt.current = clock.elapsedTime;
     };
 
-    canvas.addEventListener("pointermove", onMove);
-    canvas.addEventListener("pointerenter", onEnter);
-    canvas.addEventListener("pointerleave", onLeave);
-    canvas.addEventListener("pointercancel", onLeave);
+    window.addEventListener("pointermove", onMove, { passive: true });
     canvas.addEventListener("pointerdown", onDown);
     return () => {
-      canvas.removeEventListener("pointermove", onMove);
-      canvas.removeEventListener("pointerenter", onEnter);
-      canvas.removeEventListener("pointerleave", onLeave);
-      canvas.removeEventListener("pointercancel", onLeave);
+      window.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerdown", onDown);
     };
   }, [gl, clock, enabled]);
@@ -206,17 +200,33 @@ export function useHeadTracking(enabled = true) {
     let targetPitch = 0;
 
     if (enabled && !reducedMotion.current) {
-      if (t - lastMoveAt.current > IDLE_AFTER) {
+      if (t - pointer.current.t > IDLE_AFTER) {
         // Idle sway so the head never freezes.
         targetYaw = Math.sin(t * 0.7) * IDLE_YAW;
         targetPitch = Math.sin(t * 0.5) * IDLE_PITCH;
-      } else if (hovered.current) {
-        // The beak faces +world Z and the camera sits at +Z, so +pointer.x must
-        // rotate the head toward +world X and +pointer.y (up) must tip it up.
-        targetYaw = state.pointer.x * MAX_YAW;
-        targetPitch = -state.pointer.y * MAX_PITCH;
+      } else {
+        // Map the viewport cursor onto the canvas' own bounds, relative to its
+        // centre, then clamp so a cursor far away pins the head at its limit.
+        // The beak faces +world Z and the camera sits at +Z, so +nx must rotate
+        // the head toward +world X; +ny is up-screen, matching the old pointer.y.
+        const rect = gl.domElement.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          const nx = clamp(
+            (pointer.current.x - (rect.left + rect.width / 2)) /
+              (rect.width / 2),
+            -1,
+            1,
+          );
+          const ny = clamp(
+            -((pointer.current.y - (rect.top + rect.height / 2)) /
+              (rect.height / 2)),
+            -1,
+            1,
+          );
+          targetYaw = nx * MAX_YAW;
+          targetPitch = -ny * MAX_PITCH;
+        }
       }
-      // Pointer outside the canvas ⇒ targets stay 0 and the head recentres.
     }
 
     const k = Math.min(1, delta * DAMPING);

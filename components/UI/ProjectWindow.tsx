@@ -46,7 +46,8 @@ export default function ProjectWindow({
                   rel="noopener noreferrer"
                   className={linkClassName}
                 >
-                  [demo] <span aria-hidden="true">↗</span>
+                  {project.live ? "[live]" : "[demo]"}{" "}
+                  <span aria-hidden="true">↗</span>
                 </a>
               )}
               {project.source && (

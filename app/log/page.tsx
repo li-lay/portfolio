@@ -11,9 +11,9 @@ export default function Log() {
   return (
     <div
       style={{ "--ws-accent": "var(--color-blue)" } as CSSProperties}
-      className="max-w-3xl pt-6 pb-8 md:pt-8"
+      className="mx-auto w-full max-w-3xl pt-6 pb-8 md:pt-8"
     >
-      <h1 className="font-patua_one text-4xl text-accent md:text-5xl">
+      <h1 className="text-center font-patua_one text-4xl text-accent md:text-5xl">
         git log
       </h1>
 

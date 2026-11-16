@@ -1,13 +1,15 @@
-import { Fragment, type CSSProperties } from "react";
+import { Fragment, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import Pane from "@/components/UI/Pane";
 import FocusRow from "@/components/UI/FocusRow";
+import Uptime from "@/components/UI/Uptime";
 import {
   affiliation,
   focusAreas,
   now,
   openSource,
   profile,
+  projects,
 } from "@/lib/content";
 
 const bodyClassName = "mt-4 text-base leading-relaxed text-fg1 md:text-lg";
@@ -20,17 +22,20 @@ const TUX = `   .--.
 /'\\_   _/\`\\
 \\___)=(___/`;
 
-const buildDate = (process.env.NEXT_PUBLIC_BUILD_TIME ?? "").slice(0, 10) || "dev";
+const builtAt = process.env.NEXT_PUBLIC_BUILD_TIME ?? "";
+const buildDate = builtAt.slice(0, 10) || "dev";
 
-const neofetch: Array<[string, string]> = [
+const neofetch: Array<[string, ReactNode]> = [
   ["OS", "lilay.dev · Next.js 15"],
-  ["Host", "Angkor Khemara University (AKUKS)"],
+  ["Host", "Cloudflare"],
   ["Kernel", buildDate],
-  ["Shell", "neovim"],
-  ["DE", "Gruvbox"],
-  ["Terminal", "Web"],
+  ["Shell", "fish"],
+  ["DE", "Gruvbox Web"],
+  ["Terminal", "kitty"],
   ["Languages", "Python, JS, TS, .NET"],
-  ["Uptime", "daily-driving Linux since high school"],
+  ["Projects", String(projects.length)],
+  // Same live clock as the statusline, not a frozen string.
+  ["Uptime", <Uptime key="uptime" builtAt={builtAt} className="inline" />],
   ["Location", profile.location],
 ];
 

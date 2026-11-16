@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Sudo() {
   return (
-    <div className="max-w-2xl pt-6 pb-8 md:pt-8">
+    <div className="mx-auto flex min-h-[calc(100dvh-12rem)] w-full max-w-2xl flex-col justify-center pt-6 pb-8 md:pt-8">
       <Pane title="sudo">
         <div className="font-mono text-sm leading-relaxed md:text-base">
           <p className="break-words text-gray">[sudo] password for visitor:</p>

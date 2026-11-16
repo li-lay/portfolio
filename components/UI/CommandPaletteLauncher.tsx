@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { isTypingTarget } from "@/lib/keyboard";
+import { markHintSeen, onOpenPalette } from "@/lib/palette";
 
 // The palette (and its command list) is pulled in on first use only, so it
 // never lands in the first-load JS for any route.
@@ -15,11 +16,16 @@ export default function CommandPaletteLauncher() {
   const [open, setOpen] = useState(false);
 
   const show = useCallback(() => {
+    markHintSeen();
     setMounted(true);
     setOpen(true);
   }, []);
 
   const close = useCallback(() => setOpen(false), []);
+
+  // The statusline's `^K palette` button (and anything else) goes through the
+  // shared window event instead of importing the palette itself.
+  useEffect(() => onOpenPalette(show), [show]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {

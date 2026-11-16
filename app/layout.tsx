@@ -4,6 +4,8 @@ import "./globals.css";
 import Statusline from "@/components/UI/Statusline";
 import TabTitle from "@/components/UI/TabTitle";
 import CommandPaletteLauncher from "@/components/UI/CommandPaletteLauncher";
+import HelpLauncher from "@/components/UI/HelpLauncher";
+import KeyboardNav from "@/components/UI/KeyboardNav";
 import KonamiTheme from "@/components/UI/KonamiTheme";
 import PaneDrag from "@/components/UI/PaneDrag";
 import { profile } from "@/lib/content";
@@ -72,7 +74,9 @@ export default function RootLayout({
         <TabTitle />
         <KonamiTheme />
         <PaneDrag />
+        <KeyboardNav />
         <CommandPaletteLauncher />
+        <HelpLauncher />
         <a
           href="#main-content"
           className="sr-only rounded-pane border-2 border-bg3 bg-bg1 px-3 py-2 font-mono text-sm text-fg0 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:text-yellow"

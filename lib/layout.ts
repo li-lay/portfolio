@@ -117,8 +117,13 @@ export function resetLayout() {
   // (now empty) layout on the next load.
   setLayoutUnlocked(false);
 
+  // Dropping a dragged pane's transform puts it back in flow, and that restored
+  // layout may start above the current scroll offset: follow it back to the
+  // top. `auto` keeps it instant, and the call is a no-op when already there.
   for (const pane of document.querySelectorAll<HTMLElement>("[data-pane]")) {
     pane.style.transform = "";
     pane.style.zIndex = "";
   }
+
+  window.scrollTo({ top: 0, behavior: "auto" });
 }

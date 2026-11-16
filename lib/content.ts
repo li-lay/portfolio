@@ -21,6 +21,8 @@ export interface Project {
   description: string;
   demo?: string;
   source?: string;
+  /** True when the demo link is a real, live deployment rather than a demo. */
+  live?: boolean;
   tech: string[];
 }
 
@@ -119,6 +121,7 @@ export const projects: Project[] = [
   {
     title: "AKUKS POS",
     demo: "https://pos.akuks.com",
+    live: true,
     tech: ["ASP.NET Core", "Razor", "Bootstrap", "Gruvbox"],
     description:
       "Khmer-language, login-gated university POS system built with ASP.NET Core MVC/Razor and a custom Gruvbox theme, with public online enrollment forms and cascading Cambodian address selects.",
@@ -126,6 +129,7 @@ export const projects: Project[] = [
   {
     title: "AKUKS Library",
     demo: "https://library.akuks.com",
+    live: true,
     tech: ["React", "Vite", "TanStack Query", "EmbedPDF"],
     description:
       "Bilingual digital research library with a public catalogue of 52 documents, an embedded PDF viewer, filters, citation copying, and browser-only QR and PDF-merge tools.",
@@ -133,6 +137,7 @@ export const projects: Project[] = [
   {
     title: "AKUKS - akuks.com",
     demo: "https://akuks.com",
+    live: true,
     tech: ["NextJS", "Prisma", "SQL Server"],
     description:
       "My first Intern project at my University. A Custom Full-Stack Content Management System (CMS) using NextJS, Prisma, and SQLServer.",

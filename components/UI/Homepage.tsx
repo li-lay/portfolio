@@ -105,7 +105,7 @@ export default function Home() {
           titleRight={
             <Link
               href="/projects"
-              className="font-mono text-sm text-fg1 transition-colors hover:text-yellow"
+              className="font-mono text-sm text-green hover:text-yellow hover:underline underline-offset-4 transition-colors focus-visible:text-yellow"
             >
               see all →
             </Link>

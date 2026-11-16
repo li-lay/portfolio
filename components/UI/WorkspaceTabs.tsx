@@ -26,21 +26,22 @@ export default function WorkspaceTabs() {
             href={tab.path}
             aria-current={active ? "page" : undefined}
             aria-label={tab.label}
-            className={`flex h-full items-center px-2 font-mono text-sm sm:px-3 ${
+            className={`flex h-full shrink-0 items-center whitespace-nowrap px-2 font-mono text-sm sm:px-3 ${
               active
                 ? "bg-yellow text-bg0"
                 : "text-fg1 hover:bg-bg2 focus-visible:bg-bg2"
             }`}
           >
-            <span className="sm:hidden">
+            <span className="lg:hidden">
               {active && (
                 <span aria-hidden="true" className="mr-0.5">
                   ▸
                 </span>
               )}
               {tab.n}
+              <span className="sr-only"> {tab.label}</span>
             </span>
-            <span className="hidden sm:inline">
+            <span className="hidden lg:inline">
               {active && (
                 <span aria-hidden="true" className="mr-1">
                   ▸

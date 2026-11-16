@@ -1,5 +1,10 @@
 [
   {
+    "hash": "c341dbe",
+    "date": "2026-11-15T22:48:24+07:00",
+    "subject": "feat: add shell quirks, command palette, themes and git log"
+  },
+  {
     "hash": "1ed1317",
     "date": "2026-11-15T21:02:10+07:00",
     "subject": "feat: rebuild portfolio as Gruvbox tiling-WM with live site content"
@@ -143,10 +148,5 @@
     "hash": "cc81caf",
     "date": "2025-06-24T13:44:08+07:00",
     "subject": "added patua one font"
-  },
-  {
-    "hash": "abd40e4",
-    "date": "2025-06-24T13:32:11+07:00",
-    "subject": "init lilay.dev"
   }
 ]

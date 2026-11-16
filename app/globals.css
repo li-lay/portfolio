@@ -143,9 +143,49 @@ textarea {
   animation: blink 1s step-end infinite;
 }
 
-/* Per-workspace accent, set inline on each page's root wrapper. */
+/* Per-workspace accent, set inline on each page's root wrapper.
+   Real WM behaviour: panes rest muted and only light up while the pointer is
+   over them or something inside holds focus. Only `border-color` animates, so
+   the inline `transform` PaneDrag writes is never interpolated. */
 .pane-accent {
-  border-color: var(--ws-accent, var(--color-bg3));
+  border-color: var(--color-bg3);
+  transition: border-color 150ms ease;
+}
+
+.pane-accent:hover,
+.pane-accent:focus-within {
+  border-color: var(--ws-accent, var(--color-yellow));
+}
+
+/* The title-bar rule under the header follows the same cue at reduced
+   strength, so the whole window reads as one unit. */
+.pane-accent > [data-pane-header] {
+  border-color: var(--color-bg3);
+  transition: border-color 150ms ease;
+}
+
+.pane-accent:hover > [data-pane-header],
+.pane-accent:focus-within > [data-pane-header] {
+  border-color: color-mix(
+    in srgb,
+    var(--ws-accent, var(--color-yellow)) 60%,
+    var(--color-bg3)
+  );
+}
+
+/* No hover on touch: the tap itself is the focus signal. */
+@media (hover: none) {
+  .pane-accent:active {
+    border-color: var(--ws-accent, var(--color-yellow));
+  }
+
+  .pane-accent:active > [data-pane-header] {
+    border-color: color-mix(
+      in srgb,
+      var(--ws-accent, var(--color-yellow)) 60%,
+      var(--color-bg3)
+    );
+  }
 }
 
 .text-accent {
@@ -279,6 +319,11 @@ html.pane-dragging * {
 
   .caret {
     opacity: 1;
+  }
+
+  .pane-accent,
+  .pane-accent > [data-pane-header] {
+    transition: none;
   }
 }
 
