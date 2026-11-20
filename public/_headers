@@ -1,2 +1,25 @@
+# Content-hashed Next assets: never revalidate.
 /_next/static/*
   Cache-Control: public,max-age=31536000,immutable
+
+# Everything below is unhashed but deploy-scoped: Workers Assets defaults these
+# to `max-age=0, must-revalidate`, which made every repeat visit re-round-trip
+# the model, the fonts, the avatar and the decoder for a 304.
+/images/*
+  Cache-Control: public,max-age=31536000,immutable
+/models/*
+  Cache-Control: public,max-age=31536000,immutable
+/fonts/*
+  Cache-Control: public,max-age=31536000,immutable
+/draco/*
+  Cache-Control: public,max-age=31536000,immutable
+/favicon.ico
+  Cache-Control: public,max-age=604800
+
+# HTML/RSC is deliberately absent: it stays worker-served, so the edge cache
+# rule (Cloudflare Cache Rule on lilay.dev) owns it instead.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()

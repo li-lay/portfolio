@@ -34,7 +34,13 @@ export default function Home() {
                   </p>
                 </div>
                 <picture className="block shrink-0">
-                  <source srcSet="/images/pf-640.webp" type="image/webp" />
+                  {/* 2x of the largest box (120 px), so a phone pulls 3.8 KB
+                      instead of 12.6 KB worth of 640 px pixels. */}
+                  <source
+                    srcSet="/images/pf-240.webp 240w, /images/pf-640.webp 640w"
+                    sizes="(min-width: 768px) 120px, 96px"
+                    type="image/webp"
+                  />
                   <img
                     src="/images/pf.jpg"
                     alt="Portrait of Lilay"

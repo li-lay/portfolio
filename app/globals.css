@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: "Patua One";
-  src: url("/fonts/PatuaOne-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme {
   --color-bg0: #282828;
   --color-bg-hard: #1d2021;
@@ -39,7 +31,7 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-iosevka);
-  --font-patua_one: "Patua One", serif;
+  --font-patua_one: var(--font-patua-one);
 }
 
 /* ── Gruvbox Light ───────────────────────────────────────────────────────────

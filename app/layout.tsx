@@ -11,9 +11,14 @@ import KonamiTheme from "@/components/UI/KonamiTheme";
 import PaneDrag from "@/components/UI/PaneDrag";
 import { profile } from "@/lib/content";
 
+// `font-sans` only appears in the /projects and /contact prose panes, but
+// next/font preloads per-route regardless, so `/` paid 29 KB of preload for a
+// face it never paints. Landing text is mono or Patua; the doc still ships for
+// the routes that need it, just off the critical path.
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  preload: false,
 });
 
 // Iosevka ships ~24k glyphs upstream, so the file in assets/fonts/iosevka/
@@ -31,6 +36,25 @@ const iosevka = localFont({
   display: "swap",
   preload: true,
   fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+});
+
+// Display face for the h1s, i.e. the LCP element on `/`. Previously a 34 KB
+// TTF declared in CSS, so the browser only discovered it after the stylesheet
+// parsed and re-painted the h1 on swap. As a woff2 subset (12 KB, Latin +
+// punctuation) through next/font it gets hashed, preloaded and swapped early.
+const patuaOne = localFont({
+  src: [
+    {
+      path: "../assets/fonts/patua/patua-one-regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-patua-one",
+  display: "swap",
+  preload: true,
+  fallback: ["serif"],
+  adjustFontFallback: false,
 });
 
 export const viewport: Viewport = {
@@ -82,7 +106,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${iosevka.variable}`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${iosevka.variable} ${patuaOne.variable}`}
+    >
       <body className="antialiased">
         <TabTitle />
         <KonamiTheme />
